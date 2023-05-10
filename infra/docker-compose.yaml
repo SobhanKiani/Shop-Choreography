@@ -1,0 +1,35 @@
+  version: "3.9"
+  
+  services:    
+    order:
+      build:
+        context: ./../user-management
+        dockerfile: Dockerfile
+        target: development
+      image: skn1942/shop-c-usermanagement
+      ports:
+        - 9000:9000
+      expose:
+        - 9000
+      command: >
+        sh -c "npx prisma migrate dev --name init && npm run start:dev"
+      environment:
+        - MONGO_HOST=user-management-mongodb
+        - MONGO_PORT=27017
+        - MONGO_DB_NAME=auth
+        - NATS_URL=nats://nats-server:4222
+        - PORT=9000
+      volumes:
+        - ./../order:/usr/src/app
+      # depends_on:
+        # - nats-server
+
+    auth-mongodb:
+      image: mongo:latest
+      ports:
+        - 27017:27017
+      volumes:
+      - user-management-data
+
+  volumes:
+    -user-management-data:
