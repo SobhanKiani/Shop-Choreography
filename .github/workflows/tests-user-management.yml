@@ -1,0 +1,12 @@
+name: tests-user-management
+
+on: 
+  pull_request:
+    paths:
+      - 'user-management/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses : actions/checkout@v3
+      - run : cd user-management && yarn && yarn run test
