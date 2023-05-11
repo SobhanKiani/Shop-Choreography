@@ -6,42 +6,46 @@ import { Prisma } from "@prisma/client";
 import { JwtService } from "@nestjs/jwt";
 import { JWTPayload } from "jwt/jwt-payload";
 import { ROLE_ENUM } from "utils/enums";
+import { create } from "domain";
 
 @Injectable()
 export class UserService {
     constructor(private readonly prisma: PrismaService, private jwtService: JwtService,) { }
 
-    async createUser(name: string, address: string, email: string, password: string, phone: string, roles: string[]): Promise<UserEntity> {
-        const pass = new Password(password);
+    async createUser(createData: Prisma.UserCreateInput): Promise<UserEntity> {
+
+        const pass = await new Password(createData.password).getHashedValue();
 
         const user = await this.prisma.user.create({
             data: {
-                name: name,
-                address: address,
-                phone: phone,
-                email: email,
-                password: await pass.getHashedValue(),
-                roles: roles
+                ...createData,
+                password: pass
             }
         })
         const userEntity = new UserEntity(user.id, user.name, user.email, user.password, user.address, user.phone, user.roles)
         return userEntity
     }
 
-    async updateUser(id: string, name: string, address: string, email: string, phone: string, roles: string[]): Promise<UserEntity | null> {
+    async updateUser(id, updateData: Prisma.UserUpdateInput): Promise<UserEntity | null> {
+        const user = await this.prisma.user.findUnique({
+            where: { id }
+        })
 
-        const args: Prisma.UserUpdateArgs = {
-            where: { id: id },
-            data: {
-                name: name,
-                address: address,
-                email: email,
-                phone: phone,
-                roles: roles
-            }
+        if (!user) {
+            return null
         }
 
-        const updatedUser = await this.prisma.user.update(args)
+        const args: Prisma.UserUpdateManyArgs = {
+            where: { id: id, version: user.version },
+            data: {
+                ...updateData,
+                version: {
+                    increment: 1
+                }
+            },
+        }
+
+        const updatedUser = await this.prisma.user.updateMany(args)[0];
         if (!updatedUser) {
             return null;
         }
@@ -114,21 +118,26 @@ export class UserService {
     }
 
     async makeUserAdmin(id) {
-        const user = this.getUserById(id);
+        const user = await this.prisma.user.findUnique({
+            where: { id }
+        })
+
         if (!user) {
             return null;
         }
 
-        this.prisma.user.update({
-            where: { id: id },
+        this.prisma.user.updateMany({
+            where: { id: id, version: user.version },
             data: {
                 roles: [
                     ROLE_ENUM.USER,
                     ROLE_ENUM.ADMIN
-                ]
+                ],
+                version: {
+                    increment: 1
+                }
             }
         })
-
     }
 
 }
