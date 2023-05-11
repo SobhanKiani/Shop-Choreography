@@ -16,6 +16,13 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "services/*": ["./src/services/*"],
+      "entities/*": ["./src/entities/*"],
+      "utils/*": ["src/util/*"],
+      "jwt/*": ["src/jwt/*"],
+      "decorators/*": ["src/decorators/*"]
+    }
   }
 }
