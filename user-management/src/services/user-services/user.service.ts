@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "services/prisma-service/prisma-service.service";
-import { Name, Address, Email, Password, Phone, Role } from 'src/Entities/User/value-objects'
-import { UserEntity } from "src/Entities/User/user.entity";
+import { Password } from 'entities/user/value-objects'
+import { UserEntity } from "entities/user/user.entity";
 import { Prisma } from "@prisma/client";
 import { JwtService } from "@nestjs/jwt";
 import { JWTPayload } from "jwt/jwt-payload";

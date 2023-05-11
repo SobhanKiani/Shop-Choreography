@@ -19,7 +19,7 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "services/*": ["./src/services/*"],
-      "entities/*": ["./src/entities/*"],
+      "entities/*": ["src/entities/*"],
       "utils/*": ["src/util/*"],
       "jwt/*": ["src/jwt/*"],
       "decorators/*": ["src/decorators/*"]
