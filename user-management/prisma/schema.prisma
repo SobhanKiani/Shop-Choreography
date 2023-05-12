@@ -18,6 +18,6 @@ model User {
   address  String
   phone    String
   roles    String[]
+  isActive Boolean  @default(true)
   version  Int      @default(0)
-
 }

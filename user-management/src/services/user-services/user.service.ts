@@ -22,7 +22,16 @@ export class UserService {
                 password: pass
             }
         })
-        const userEntity = new UserEntity(user.id, user.name, user.email, user.password, user.address, user.phone, user.roles)
+        const userEntity = new UserEntity(
+            user.id,
+            user.name,
+            user.email,
+            user.password,
+            user.address,
+            user.phone,
+            user.roles,
+            user.isActive
+        )
         return userEntity
     }
 
@@ -50,7 +59,16 @@ export class UserService {
             return null;
         }
 
-        const userEntity = new UserEntity(updatedUser.id, updatedUser.name, updatedUser.email, updatedUser.password, updatedUser.address, updatedUser.phone, updatedUser.roles)
+        const userEntity = new UserEntity(
+            updatedUser.id,
+            updatedUser.name,
+            updatedUser.email,
+            updatedUser.password,
+            updatedUser.address,
+            updatedUser.phone,
+            updatedUser.roles,
+            updatedUser.isActive
+        )
         return userEntity;
     }
 
@@ -62,7 +80,16 @@ export class UserService {
             return null
         }
 
-        const userEntity = new UserEntity(user.id, user.name, user.email, user.password, user.address, user.phone, user.roles)
+        const userEntity = new UserEntity(
+            user.id,
+            user.name,
+            user.email,
+            user.password,
+            user.address,
+            user.phone,
+            user.roles,
+            user.isActive
+        )
         return userEntity;
 
     }
@@ -77,7 +104,16 @@ export class UserService {
             return null
         }
 
-        const userEntity = new UserEntity(user.id, user.name, user.email, user.password, user.address, user.phone, user.roles);
+        const userEntity = new UserEntity(
+            user.id,
+            user.name,
+            user.email,
+            user.password,
+            user.address,
+            user.phone,
+            user.roles,
+            user.isActive
+        );
         return userEntity;
     }
 
@@ -91,7 +127,16 @@ export class UserService {
             return null
         }
 
-        const userEntity = new UserEntity(user.id, user.name, user.email, user.password, user.address, user.phone, user.roles);
+        const userEntity = new UserEntity(
+            user.id,
+            user.name,
+            user.email,
+            user.password,
+            user.address,
+            user.phone,
+            user.roles,
+            user.isActive
+        );
         return userEntity;
     }
 
@@ -138,6 +183,75 @@ export class UserService {
                 }
             }
         })
+    }
+
+    async removeAdminRoleFromUser(id: string): Promise<UserEntity | null> {
+        const user = await this.prisma.user.findUnique({
+            where: { id },
+        });
+
+        if (!user) {
+            return null;
+        }
+
+        const updatedUser = await this.prisma.user.updateMany({
+            where: { id, version: user.version },
+            data: {
+                roles: {
+                    set: [ROLE_ENUM.USER],
+                },
+                version: {
+                    increment: 1,
+                },
+            },
+        })[0];
+
+        const userEntity = new UserEntity(
+            updatedUser.id,
+            updatedUser.name,
+            updatedUser.email,
+            updatedUser.password,
+            updatedUser.address,
+            updatedUser.phone,
+            updatedUser.roles,
+            updatedUser.isActive
+        );
+
+        return userEntity;
+    }
+
+
+    async toggleUserIsActive(id: string): Promise<UserEntity | null> {
+        const user = await this.prisma.user.findUnique({
+            where: { id },
+        });
+
+        if (!user) {
+            return null;
+        }
+
+        const updatedUser = await this.prisma.user.updateMany({
+            where: { id, version: user.version },
+            data: {
+                isActive: !user.isActive,
+                version: {
+                    increment: 1,
+                },
+            },
+        })[0];
+
+        const userEntity = new UserEntity(
+            updatedUser.id,
+            updatedUser.name,
+            updatedUser.email,
+            updatedUser.password,
+            updatedUser.address,
+            updatedUser.phone,
+            updatedUser.roles,
+            updatedUser.isActive
+        );
+
+        return userEntity;
     }
 
 }

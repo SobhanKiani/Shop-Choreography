@@ -4,6 +4,7 @@ import * as bcrypt from 'bcryptjs';
 import { Address, Email, Name, Password, Phone, Role } from './value-objects';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { IsActive } from './value-objects/is-active.value-object';
 
 @Injectable()
 export class UserEntity {
@@ -14,6 +15,7 @@ export class UserEntity {
     address: Address;
     phone: Phone;
     roles: Role[] = [];
+    isActive: IsActive;
 
 
     constructor(
@@ -24,7 +26,7 @@ export class UserEntity {
         private readonly addressValue: string,
         private readonly phoneValue: string,
         private readonly rolesValue: string[],
-
+        private readonly isActiveValue: boolean
     ) {
         this.id = idValue;
         this.password = new Password(passwordValue);
@@ -34,6 +36,7 @@ export class UserEntity {
         for (let role of rolesValue) {
             this.roles.push(new Role(role))
         }
+        this.isActive = new IsActive(isActiveValue)
     }
 
 
