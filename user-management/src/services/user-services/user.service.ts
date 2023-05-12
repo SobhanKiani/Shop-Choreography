@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "services/prisma-service/prisma-service.service";
-import { Email, Password } from 'entities/user/value-objects'
+import { Password } from 'entities/user/value-objects'
 import { UserEntity } from "entities/user/user.entity";
 import { Prisma } from "@prisma/client";
 import { JwtService } from "@nestjs/jwt";
@@ -10,7 +9,6 @@ import { UserRepository } from "repositories/user.repository";
 @Injectable()
 export class UserService {
     constructor(
-        private readonly prisma: PrismaService,
         private jwtService: JwtService,
         private userRepository: UserRepository
     ) { }
