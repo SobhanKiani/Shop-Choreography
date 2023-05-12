@@ -1,149 +1,83 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "services/prisma-service/prisma-service.service";
-import { Password } from 'entities/user/value-objects'
+import { Email, Password } from 'entities/user/value-objects'
 import { UserEntity } from "entities/user/user.entity";
 import { Prisma } from "@prisma/client";
 import { JwtService } from "@nestjs/jwt";
 import { JWTPayload } from "jwt/jwt-payload";
-import { ROLE_ENUM } from "utils/enums";
-import { create } from "domain";
+import { UserRepository } from "repositories/user.repository";
 
 @Injectable()
 export class UserService {
-    constructor(private readonly prisma: PrismaService, private jwtService: JwtService,) { }
+    constructor(
+        private readonly prisma: PrismaService,
+        private jwtService: JwtService,
+        private userRepository: UserRepository
+    ) { }
 
-    async createUser(createData: Prisma.UserCreateInput): Promise<UserEntity> {
-
+    async signUp(createData: Prisma.UserCreateInput): Promise<{ userEntity, token }> {
         const pass = await new Password(createData.password).getHashedValue();
-
-        const user = await this.prisma.user.create({
-            data: {
-                ...createData,
-                password: pass
-            }
-        })
-        const userEntity = new UserEntity(
-            user.id,
-            user.name,
-            user.email,
-            user.password,
-            user.address,
-            user.phone,
-            user.roles,
-            user.isActive
-        )
-        return userEntity
+        const finalCreateData: Prisma.UserCreateInput = {
+            ...createData,
+            password: pass
+        }
+        const userEntity = await this.userRepository.createUser(finalCreateData)
+        const token = await userEntity.createTokenForUser(this.jwtService)
+        return {
+            token,
+            userEntity: userEntity
+        };
     }
 
-    async updateUser(id, updateData: Prisma.UserUpdateInput): Promise<UserEntity | null> {
-        const user = await this.prisma.user.findUnique({
-            where: { id }
-        })
-
-        if (!user) {
-            return null
-        }
-
-        const args: Prisma.UserUpdateManyArgs = {
-            where: { id: id, version: user.version },
-            data: {
-                ...updateData,
-                version: {
-                    increment: 1
-                }
-            },
-        }
-
-        const updatedUser = await this.prisma.user.updateMany(args)[0];
-        if (!updatedUser) {
+    async login(email: string, password: string): Promise<{ userEntity, token } | null> {
+        const userEntity = await this.getUserByEmail(email);
+        if (!userEntity) {
             return null;
         }
 
-        const userEntity = new UserEntity(
-            updatedUser.id,
-            updatedUser.name,
-            updatedUser.email,
-            updatedUser.password,
-            updatedUser.address,
-            updatedUser.phone,
-            updatedUser.roles,
-            updatedUser.isActive
-        )
-        return userEntity;
+        if (!await userEntity.isGivenPasswordValid(password)) {
+            return null;
+        }
+
+        const token = await userEntity.createTokenForUser(this.jwtService);
+        return {
+            token,
+            userEntity
+        }
+    }
+
+    async updateUser(id, updateData: Prisma.UserUpdateInput): Promise<UserEntity | null> {
+        const userEntity = await this.userRepository.getUserById(id);
+        if (!userEntity) {
+            return null;
+        }
+
+        userEntity.setValues(updateData);
+        const updatedUserEntity = await this.userRepository.updateUser(userEntity)
+        return updatedUserEntity;
     }
 
     async deleteUser(id: string): Promise<UserEntity | null> {
-        const args: Prisma.UserDeleteArgs = { where: { id: id } }
-        const user = await this.prisma.user.delete(args);
-
-        if (!user) {
-            return null
-        }
-
-        const userEntity = new UserEntity(
-            user.id,
-            user.name,
-            user.email,
-            user.password,
-            user.address,
-            user.phone,
-            user.roles,
-            user.isActive
-        )
+        const userEntity = await this.userRepository.deleteUser(id);
         return userEntity;
-
     }
 
     async getUserById(id: string): Promise<UserEntity | null> {
-        const user = await this.prisma.user.findUnique({
-            where: {
-                id: id,
-            },
-        });
-        if (!user) {
-            return null
-        }
-
-        const userEntity = new UserEntity(
-            user.id,
-            user.name,
-            user.email,
-            user.password,
-            user.address,
-            user.phone,
-            user.roles,
-            user.isActive
-        );
+        const userEntity = await this.userRepository.getUserById(id);
         return userEntity;
     }
 
     async getUserByEmail(email: string): Promise<UserEntity | null> {
-        const user = await this.prisma.user.findUnique({
-            where: {
-                email: email,
-            },
-        });
-        if (!user) {
-            return null
-        }
-
-        const userEntity = new UserEntity(
-            user.id,
-            user.name,
-            user.email,
-            user.password,
-            user.address,
-            user.phone,
-            user.roles,
-            user.isActive
-        );
+        const userEntity = this.userRepository.getUserByEmail(email);
         return userEntity;
     }
 
+    // for login
     async compareUserPassword(user: UserEntity, password: string) {
         return await user.isGivenPasswordValid(password);
     }
 
+    // for signUp
     async createTokenForUser(user: UserEntity) {
         return await user.createTokenForUser(this.jwtService);
     }
@@ -153,105 +87,42 @@ export class UserService {
         if (!decodedToken || !decodedToken.id) {
             return null;
         }
-        const user = this.getUserById(decodedToken.id)
-
-        if (!user) {
-            return null;
-        }
-
-        return user;
+        const userEntity = await this.getUserById(decodedToken.id)
+        return userEntity;
     }
 
     async makeUserAdmin(id) {
-        const user = await this.prisma.user.findUnique({
-            where: { id }
-        })
+        const userEntity = await this.userRepository.getUserById(id);
 
-        if (!user) {
+        if (!userEntity) {
             return null;
         }
 
-        this.prisma.user.updateMany({
-            where: { id: id, version: user.version },
-            data: {
-                roles: [
-                    ROLE_ENUM.USER,
-                    ROLE_ENUM.ADMIN
-                ],
-                version: {
-                    increment: 1
-                }
-            }
-        })
+        userEntity.makeUserAdmin()
+        const updatedEntity = await this.userRepository.makeUserAdmin(userEntity);
+        return updatedEntity;
     }
 
     async removeAdminRoleFromUser(id: string): Promise<UserEntity | null> {
-        const user = await this.prisma.user.findUnique({
-            where: { id },
-        });
-
-        if (!user) {
+        const userEntity = await this.userRepository.getUserById(id);
+        if (!userEntity) {
             return null;
         }
 
-        const updatedUser = await this.prisma.user.updateMany({
-            where: { id, version: user.version },
-            data: {
-                roles: {
-                    set: [ROLE_ENUM.USER],
-                },
-                version: {
-                    increment: 1,
-                },
-            },
-        })[0];
-
-        const userEntity = new UserEntity(
-            updatedUser.id,
-            updatedUser.name,
-            updatedUser.email,
-            updatedUser.password,
-            updatedUser.address,
-            updatedUser.phone,
-            updatedUser.roles,
-            updatedUser.isActive
-        );
-
-        return userEntity;
+        userEntity.removeAdminRole();
+        const updatedEntity = await this.userRepository.removeAdminRoleFromUser(userEntity)
+        return updatedEntity;
     }
 
 
     async toggleUserIsActive(id: string): Promise<UserEntity | null> {
-        const user = await this.prisma.user.findUnique({
-            where: { id },
-        });
-
-        if (!user) {
+        const userEntity = await this.userRepository.getUserById(id);
+        if (!userEntity) {
             return null;
         }
-
-        const updatedUser = await this.prisma.user.updateMany({
-            where: { id, version: user.version },
-            data: {
-                isActive: !user.isActive,
-                version: {
-                    increment: 1,
-                },
-            },
-        })[0];
-
-        const userEntity = new UserEntity(
-            updatedUser.id,
-            updatedUser.name,
-            updatedUser.email,
-            updatedUser.password,
-            updatedUser.address,
-            updatedUser.phone,
-            updatedUser.roles,
-            updatedUser.isActive
-        );
-
-        return userEntity;
+        userEntity.toggleIsActive()
+        const updatedUserEntity = await this.userRepository.toggleUserIsActive(userEntity);
+        return updatedUserEntity;
     }
 
 }

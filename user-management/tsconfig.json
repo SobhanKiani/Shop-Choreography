@@ -22,7 +22,9 @@
       "entities/*": ["src/entities/*"],
       "utils/*": ["src/util/*"],
       "jwt/*": ["src/jwt/*"],
-      "decorators/*": ["src/decorators/*"]
+      "decorators/*": ["src/decorators/*"],
+      "repositories/*": ["src/repositories/*"],
+      "factories/*": ["src/factories/*"]
     }
   }
 }

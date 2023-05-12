@@ -6,4 +6,6 @@ export class IsActive {
     public getValue(): boolean {
         return this.value;
     }
+
+
 }
