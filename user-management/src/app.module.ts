@@ -5,7 +5,8 @@ import { PassportModule } from '@nestjs/passport';
 import { JWT_CONSTANT } from 'jwt/constants';
 import { PrismaService } from 'services/prisma-service/prisma-service.service';
 import { UserService } from 'services/user-services/user.service';
-import { UserController } from './user/user.controller';
+import { UserController } from './controllers/user/user.controller';
+import { UserRepository } from 'repositories/user.repository';
 
 
 @Module({
@@ -28,6 +29,6 @@ import { UserController } from './user/user.controller';
     ]),
   ],
   controllers: [UserController],
-  providers: [PrismaService, UserService],
+  providers: [PrismaService, UserService, UserRepository],
 })
 export class AppModule { }

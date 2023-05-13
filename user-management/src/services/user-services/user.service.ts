@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Password } from 'entities/user/value-objects'
 import { UserEntity } from "entities/user/user.entity";
-import { Prisma } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import { JwtService } from "@nestjs/jwt";
 import { JWTPayload } from "jwt/jwt-payload";
 import { UserRepository } from "repositories/user.repository";
@@ -13,7 +13,7 @@ export class UserService {
         private userRepository: UserRepository
     ) { }
 
-    async signUp(createData: Prisma.UserCreateInput): Promise<{ userEntity, token }> {
+    async signUp(createData: Prisma.UserCreateInput): Promise<{ userEntity: UserEntity, token: string }> {
         const pass = await new Password(createData.password).getHashedValue();
         const finalCreateData: Prisma.UserCreateInput = {
             ...createData,
@@ -27,7 +27,7 @@ export class UserService {
         };
     }
 
-    async login(email: string, password: string): Promise<{ userEntity, token } | null> {
+    async login(email: string, password: string): Promise<{ userEntity:UserEntity, token:string } | null> {
         const userEntity = await this.getUserByEmail(email);
         if (!userEntity) {
             return null;

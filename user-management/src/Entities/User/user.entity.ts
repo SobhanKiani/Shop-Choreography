@@ -94,7 +94,8 @@ export class UserEntity {
             password: await this.password.getHashedValue(),
             roles: this.getRolesStringList(),
             email: this.email.getValue(),
-            isActive: this.isActive.getValue()
+            isActive: this.isActive.getValue(),
+            version: this.getVersionValue()
         }
     }
 

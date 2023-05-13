@@ -1,12 +1,12 @@
 {
   "name": "@sobhankiani/shopc-common-lib",
-  "version": "1.0.10",
+  "version": "1.0.20",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
-  "license": "MIT",
   "files": [
     "build/**/*"
   ],
+  "license": "MIT",
   "scripts": {
     "clean": "del ./build/*",
     "build": "npm run clean && tsc",
