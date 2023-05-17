@@ -24,7 +24,8 @@
       "jwt/*": ["src/jwt/*"],
       "decorators/*": ["src/decorators/*"],
       "repositories/*": ["src/repositories/*"],
-      "factories/*": ["src/factories/*"]
+      "factories/*": ["src/factories/*"],
+      "controllers/*": ["src/controllers/*"]
     }
   }
 }
