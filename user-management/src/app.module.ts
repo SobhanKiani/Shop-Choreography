@@ -7,6 +7,7 @@ import { PrismaService } from 'services/prisma-service/prisma-service.service';
 import { UserService } from 'services/user-services/user.service';
 import { UserController } from './controllers/user/user.controller';
 import { UserRepository } from 'repositories/user.repository';
+import { UserEntity } from 'entities/user/user.entity';
 
 
 @Module({
@@ -31,6 +32,7 @@ import { UserRepository } from 'repositories/user.repository';
   ],
   controllers: [UserController],
   providers: [PrismaService, UserService, UserRepository],
-  
+  exports: [UserEntity]
+
 })
 export class AppModule { }
