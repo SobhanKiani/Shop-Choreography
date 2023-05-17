@@ -3,7 +3,7 @@
 import * as bcrypt from 'bcryptjs';
 // import { Address, Email, Name, Password, Phone, Role, IsActive, Version } from './value-objects';
 import { JwtService } from '@nestjs/jwt';
-import { ROLE_ENUM } from '../../util/enums';
+import { ROLE_ENUM } from '../util/enums';
 import { Address } from './value-objects/address.value-object';
 import { Name } from './value-objects/name.value-object';
 import { Password } from './value-objects/password.value-object';
