@@ -3,7 +3,7 @@
 import * as bcrypt from 'bcryptjs';
 import { Address, Email, Name, Password, Phone, Role, IsActive, Version } from './value-objects';
 import { JwtService } from '@nestjs/jwt';
-import { ROLE_ENUM } from 'utils/enums';
+import { ROLE_ENUM } from '../../util/enums';
 
 
 export class UserEntity {
@@ -31,7 +31,8 @@ export class UserEntity {
     ) {
         this.id = idValue;
         this.password = new Password(passwordValue);
-        this.name = new Name(this.nameValue);
+        this.email = new Email(emailValue)
+        this.name = new Name(nameValue);
         this.address = new Address(addressValue);
         this.phone = new Phone(phoneValue);
         for (let role of rolesValue) {
@@ -85,13 +86,12 @@ export class UserEntity {
         return this.version;
     }
 
-    public async toObject() {
+    public toObject() {
         return {
             id: this.id,
             name: this.name.getValue(),
             address: this.address.getValue(),
             phone: this.phone.getValue(),
-            password: await this.password.getHashedValue(),
             roles: this.getRolesStringList(),
             email: this.email.getValue(),
             isActive: this.isActive.getValue(),
@@ -160,5 +160,9 @@ export class UserEntity {
         return this.roles;
     }
 
+    public hasRoles(roles: string[]) {
+        const authorized = this.getRolesStringList().some((role) => roles.includes(role))
+        return authorized
+    }
 }
 

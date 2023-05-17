@@ -23,12 +23,14 @@ import { UserRepository } from 'repositories/user.repository';
         name: 'NATS_SERVICE',
         transport: Transport.NATS,
         options: {
-          servers: [process.env.NATS_URL]
+          // servers: [process.env.NATS_URL]
+          servers: ["nats://localhost:4222"]
         }
       },
     ]),
   ],
   controllers: [UserController],
   providers: [PrismaService, UserService, UserRepository],
+  
 })
 export class AppModule { }

@@ -4,6 +4,7 @@ export interface IUserToAdminEvent {
     subject: Subjects.UserToAdmin
     data: {
         id: string,
+        version: number,
     }
 }
 

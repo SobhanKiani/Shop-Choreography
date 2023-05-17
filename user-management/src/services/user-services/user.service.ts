@@ -1,10 +1,10 @@
-import { Injectable } from "@nestjs/common";
-import { Password } from 'entities/user/value-objects'
-import { UserEntity } from "entities/user/user.entity";
+import { Inject, Injectable } from "@nestjs/common";
+import { Password } from '../../entities/user/value-objects'
+import { UserEntity } from "../../entities/user/user.entity";
 import { Prisma, User } from "@prisma/client";
 import { JwtService } from "@nestjs/jwt";
-import { JWTPayload } from "jwt/jwt-payload";
-import { UserRepository } from "repositories/user.repository";
+import { JWTPayload } from "../../jwt/jwt-payload";
+import { UserRepository } from "../../repositories/user.repository";
 
 @Injectable()
 export class UserService {
@@ -27,7 +27,8 @@ export class UserService {
         };
     }
 
-    async login(email: string, password: string): Promise<{ userEntity:UserEntity, token:string } | null> {
+    async login(params: { email: string, password: string }): Promise<{ userEntity: UserEntity, token: string } | null> {
+        const { email, password } = params
         const userEntity = await this.getUserByEmail(email);
         if (!userEntity) {
             return null;
@@ -37,7 +38,7 @@ export class UserService {
             return null;
         }
 
-        const token = await userEntity.createTokenForUser(this.jwtService);
+        const token = await this.createTokenForUser(userEntity)
         return {
             token,
             userEntity
@@ -76,17 +77,20 @@ export class UserService {
     }
 
     // for signUp
-    async createTokenForUser(user: UserEntity) {
-        return await user.createTokenForUser(this.jwtService);
-    }
+    // async createTokenForUser(user: UserEntity) {
+    //     return await user.createTokenForUser(this.jwtService);
+    // }
 
-    async decodeToken(token: string) {
+    async verifyUser(token: string, roles?: string[]) {
         const decodedToken = this.jwtService.decode(token) as JWTPayload;
         if (!decodedToken || !decodedToken.id) {
             return null;
         }
         const userEntity = await this.getUserById(decodedToken.id)
-        return userEntity;
+
+        if (roles && roles.length > 0 && userEntity.hasRoles(roles)) {
+            return userEntity;
+        }
     }
 
     async makeUserAdmin(id) {
@@ -121,6 +125,10 @@ export class UserService {
         userEntity.toggleIsActive()
         const updatedUserEntity = await this.userRepository.toggleUserIsActive(userEntity);
         return updatedUserEntity;
+    }
+
+    async createTokenForUser(userEntity: UserEntity) {
+        return await this.jwtService.sign({ id: userEntity.getId(), email: userEntity.getEmail().getValue() });
     }
 
 }

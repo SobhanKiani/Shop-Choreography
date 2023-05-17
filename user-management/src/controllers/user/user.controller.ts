@@ -1,14 +1,15 @@
 import { Controller, HttpStatus, Inject } from '@nestjs/common';
 import { ClientProxy, MessagePattern } from '@nestjs/microservices';
 import { Prisma } from '@prisma/client';
-import { IUserAuthReponse, IUserCreatedEvent, Subjects } from '@sobhankiani/shopc-common-lib';
-import { Email } from 'entities/user/value-objects';
-import { UserService } from 'services/user-services/user.service';
+import { IAdminToUserEvent, IUserActivedEvent, IUserAuthReponse, IUserCreatedEvent, IUserDeactivedEvent, IUserDeletedEvent, IUserResponse, IUserToAdminEvent, IUserUdpatedEvent, Subjects } from '@sobhankiani/shopc-common-lib';
+import { UserService } from '../../services/user-services/user.service';
+import { UserEntity } from 'entities/user/user.entity';
+
 @Controller('user')
 export class UserController {
     constructor(
+        private userService: UserService,
         @Inject('NATS_SERVICE') private natsClient: ClientProxy,
-        @Inject() private userService: UserService
     ) { }
 
     @MessagePattern("USER_SIGN_UP")
@@ -24,8 +25,7 @@ export class UserController {
                     data: null
                 }
             }
-            const userObj = await result.userEntity.toObject()
-            delete userObj.password;
+            const userObj = result.userEntity.toObject()
 
             const data = {
                 token: result.token,
@@ -49,7 +49,7 @@ export class UserController {
             return {
                 message: "Could Not Complete The Operation",
                 status: HttpStatus.BAD_REQUEST,
-                errors: [e.errors],
+                errors: ["Could Not Complete The Operation"],
                 data: null
             }
         }
@@ -58,18 +58,17 @@ export class UserController {
     @MessagePattern("USER_LOGIN")
     async login(params: { email: string, password: string }): Promise<IUserAuthReponse> {
         try {
-            const result = await this.userService.login(params.email, params.password);
+            const result = await this.userService.login({ email: params.email, password: params.password });
             if (!result) {
                 return {
                     message: "Email Or Password Is Not Correct",
-                    status: HttpStatus.BAD_REQUEST,
+                    status: HttpStatus.UNAUTHORIZED,
                     errors: ["Could Not Login"],
                     data: null
                 }
             }
 
-            const userObj = await result.userEntity.toObject()
-            delete userObj.password;
+            const userObj = result.userEntity.toObject()
 
             const data = {
                 token: result.token,
@@ -77,11 +76,92 @@ export class UserController {
             }
 
             return {
-                message: "Login Completed",
+                message: "Login Successful",
                 status: HttpStatus.OK,
                 errors: null,
                 data: data
             }
+
+        } catch (e) {
+            return {
+                message: "Could Not Complete The Operation",
+                status: HttpStatus.BAD_REQUEST,
+                errors: ["Could Not Complete The Operation"],
+                data: null
+            }
+        }
+    }
+
+    @MessagePattern("USER_UPDATE")
+    async updateUser(params: { id: string, updateData: Prisma.UserUpdateInput }): Promise<IUserResponse> {
+        try {
+            const userEntity = await this.userService.updateUser(params.id, params.updateData);
+            if (!userEntity) {
+                return {
+                    message: "User Not Found",
+                    status: HttpStatus.NOT_FOUND,
+                    errors: ['User Not Found'],
+                    data: null
+                }
+            }
+            const userObj = userEntity.toObject();
+
+            const eventData: IUserUdpatedEvent = {
+                subject: Subjects.UserUpdated,
+                data: {
+                    ...userObj
+                }
+            }
+            this.natsClient.emit<any, IUserUdpatedEvent>(Subjects.UserUpdated, eventData);
+
+            return {
+                message: "User Updated Successfully",
+                status: HttpStatus.OK,
+                errors: null,
+                data: userObj
+            }
+
+
+        } catch (e) {
+            return {
+                message: "Could Not Complete The Operation",
+                status: HttpStatus.BAD_REQUEST,
+                errors: ["Could Not Complete The Operation"],
+                data: null
+            }
+        }
+
+    }
+
+    @MessagePattern("USER_DELETE")
+    async deleteUser(params: { id: string }) {
+        try {
+            const userEntity = await this.userService.deleteUser(params.id);
+            if (!userEntity) {
+                return {
+                    message: "User Not Found",
+                    status: HttpStatus.NOT_FOUND,
+                    errors: ['User Not Found'],
+                    data: null
+                }
+            }
+
+            const userObj = userEntity.toObject();
+            const eventData: IUserDeletedEvent = {
+                subject: Subjects.UserDeleted,
+                data: {
+                    ...userObj
+                }
+            }
+            this.natsClient.emit<any, IUserDeletedEvent>(Subjects.UserDeleted, eventData);
+
+            return {
+                message: "User Updated",
+                status: HttpStatus.OK,
+                errors: null,
+                data: userObj
+            }
+
 
         } catch (e) {
             return {
@@ -93,25 +173,185 @@ export class UserController {
         }
     }
 
-    @MessagePattern("USER_UPDATE")
-    async updateUser() { }
-
-    @MessagePattern("USER_DELETE")
-    async deleteUser() { }
-
     @MessagePattern("USER_TOGGLE_ACTIVATION")
-    async toggleActivation() { }
+    async toggleActivation(params: { id: string }): Promise<IUserResponse> {
+        try {
+            const userEntity = await this.userService.toggleUserIsActive(params.id);
+            if (!userEntity) {
+                return {
+                    message: "User Not Found",
+                    status: HttpStatus.NOT_FOUND,
+                    errors: ['User Not Found'],
+                    data: null
+                }
+            }
+            const userObj = userEntity.toObject();
+
+            if (userObj.isActive) {
+                const eventData: IUserActivedEvent = {
+                    subject: Subjects.UserActived,
+                    data: {
+                        id: userObj.id,
+                        isActive: userObj.isActive
+                    }
+                }
+                this.natsClient.emit<any, IUserActivedEvent>(Subjects.UserActived, eventData);
+            } else {
+                const eventData: IUserDeactivedEvent = {
+                    subject: Subjects.UserDeactived,
+                    data: {
+                        id: userObj.id,
+                        isActive: userObj.isActive
+                    }
+                }
+                this.natsClient.emit<any, IUserDeactivedEvent>(Subjects.UserDeactived, eventData);
+            }
+
+            return {
+                message: "User Activation Toggled",
+                status: HttpStatus.OK,
+                errors: null,
+                data: userObj
+            }
+
+
+        } catch (e) {
+            return {
+                message: "Could Not Complete The Operation",
+                status: HttpStatus.BAD_REQUEST,
+                errors: [e.errors],
+                data: null
+            }
+        }
+    }
 
     @MessagePattern("USER_VERIFY")
-    async verifyUser() { }
+    async verifyUser(params: { token: string, roles?: string[] }) {
+        try {
+            const userEntity = await this.userService.verifyUser(params.token, params.roles);
+            if (!userEntity) {
+                return {
+                    message: "Could Not Verify The User",
+                    status: HttpStatus.BAD_REQUEST,
+                    errors: ['Could Not Verify The User'],
+                    data: null
+                }
+            }
+            const userObj = userEntity.toObject()
+            if (params.roles && params.roles.length > 0) {
+                const authorized = userObj.roles.some((role) => params.roles.includes(role))
+                if (!authorized) {
+                    return {
+                        message: "Could Not Authorized The User",
+                        status: HttpStatus.UNAUTHORIZED,
+                        errors: ['Could Not Authorized The User'],
+                        data: null
+
+                    }
+                }
+            }
+
+            return {
+                message: "User Verified",
+                status: HttpStatus.OK,
+                errors: null,
+                data: userObj
+            }
+        } catch (e) {
+            return {
+                message: "Could Not Complete The Operation",
+                status: HttpStatus.BAD_REQUEST,
+                errors: ["Could Not Complete The Operation"],
+                data: null
+            }
+        }
+
+    }
 
     @MessagePattern("USER_MAKE_ADMIN")
-    async makeUserAdmin() { }
+    async makeUserAdmin(params: { id: string }) {
+        try {
+
+            const userEntity = await this.userService.makeUserAdmin(params.id);
+            if (!userEntity) {
+                return {
+                    message: "Could Not Find The User",
+                    status: HttpStatus.BAD_REQUEST,
+                    errors: ['Could Not Find The User'],
+                    data: null
+                }
+            }
+            const userObj = userEntity.toObject()
+
+            const eventData: IUserToAdminEvent = {
+                subject: Subjects.UserToAdmin,
+                data: {
+                    id: userObj.id,
+                    version: userObj.version
+                }
+            }
+
+            this.natsClient.emit<IUserToAdminEvent>(Subjects.UserToAdmin, eventData);
+
+            return {
+                message: "User Role Changed",
+                status: HttpStatus.OK,
+                errors: null,
+                data: userObj
+            }
+        } catch (e) {
+            return {
+                message: "Could Not Complete The Operation",
+                status: HttpStatus.BAD_REQUEST,
+                errors: [e.errors],
+                data: null
+            }
+        }
+
+    }
 
     @MessagePattern("USER_REMOVE_ADMIN_ROLE")
-    async removeAdminRoleFromUser() { }
+    async removeAdminRoleFromUser(params: { id: string }) {
+        try {
+            const userEntity = await this.userService.removeAdminRoleFromUser(params.id);
+            if (!userEntity) {
+                return {
+                    message: "Could Not Find The User",
+                    status: HttpStatus.BAD_REQUEST,
+                    errors: ['Could Not Find The User'],
+                    data: null
+                }
+            }
+            const userObj = userEntity.toObject()
 
-    @MessagePattern("USER_GET_BY_CRIDENTIAL")
-    async getUserByUniqueCridentials() { }
+            const eventData: IAdminToUserEvent = {
+                subject: Subjects.AdminToUser,
+                data: {
+                    id: userObj.id,
+                    version: userObj.version
+                }
+            }
+
+            this.natsClient.emit<IAdminToUserEvent>(Subjects.AdminToUser, eventData);
+
+            return {
+                message: "UserVerified",
+                status: HttpStatus.OK,
+                errors: null,
+                data: userObj
+            }
+
+        } catch (e) {
+            return {
+                message: "Could Not Complete The Operation",
+                status: HttpStatus.BAD_REQUEST,
+                errors: [e.errors],
+                data: null
+            }
+        }
+
+    }
+
+
 
 }
