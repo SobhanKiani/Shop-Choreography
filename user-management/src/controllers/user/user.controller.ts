@@ -3,7 +3,6 @@ import { ClientProxy, MessagePattern } from '@nestjs/microservices';
 import { Prisma } from '@prisma/client';
 import { IAdminToUserEvent, IUserActivedEvent, IUserAuthReponse, IUserCreatedEvent, IUserDeactivedEvent, IUserDeletedEvent, IUserResponse, IUserToAdminEvent, IUserUdpatedEvent, Subjects } from '@sobhankiani/shopc-common-lib';
 import { UserService } from '../../services/user-services/user.service';
-import { UserEntity } from 'entities/user/user.entity';
 
 @Controller('user')
 export class UserController {
