@@ -4,14 +4,14 @@ import { ClientProxy, ClientsModule } from '@nestjs/microservices';
 import { Prisma } from '@prisma/client';
 import { IAdminToUserEvent, IUserAuthReponse, IUserDeletedEvent, IUserResponse, IUserToAdminEvent, Subjects } from '@sobhankiani/shopc-common-lib';
 import { UserController } from './user.controller';
-import { UserService } from '../../services/user-services/user.service';
+import { UserService } from './../../services/user-services/user.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { JWT_CONSTANT } from '../../jwt/constants';
-import { UserRepository } from '../../repositories/user.repository';
-import { PrismaService } from '../../services/prisma-service/prisma-service.service';
+import { JWT_CONSTANT } from './../../jwt/constants';
+import { UserRepository } from './../../repositories/user.repository';
+import { PrismaService } from './../../services/prisma-service/prisma-service.service';
 import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
-import { ROLE_ENUM } from '../../util/enums';
-import { UserEntity } from '../../entities/user/user.entity'
+import { ROLE_ENUM } from './../../util/enums';
+import { UserEntity } from './../../entities/user/user.entity'
 
 
 describe('UserController', () => {
