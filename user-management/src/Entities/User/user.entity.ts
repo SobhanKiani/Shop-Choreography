@@ -1,9 +1,17 @@
 // src/users/entities/user.entity.ts
 
 import * as bcrypt from 'bcryptjs';
-import { Address, Email, Name, Password, Phone, Role, IsActive, Version } from './value-objects';
+// import { Address, Email, Name, Password, Phone, Role, IsActive, Version } from './value-objects';
 import { JwtService } from '@nestjs/jwt';
 import { ROLE_ENUM } from '../../util/enums';
+import { Address } from './value-objects/address.value-object';
+import { Name } from './value-objects/name.value-object';
+import { Password } from './value-objects/password.value-object';
+import { Email } from './value-objects/email.value-object';
+import { Phone } from './value-objects/phone.value-object';
+import { Role } from './value-objects/role.value.object';
+import { IsActive } from './value-objects/is-active.value-object';
+import { Version } from './value-objects/version.value-object';
 
 
 export class UserEntity {
