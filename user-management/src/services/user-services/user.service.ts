@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Password } from '../../entities/user/value-objects'
-import { UserEntity } from "../../entities/user/user.entity";
+import { UserEntity } from "../../entities/user/user";
 import { Prisma, User } from "@prisma/client";
 import { JwtService } from "@nestjs/jwt";
 import { JWTPayload } from "../../jwt/jwt-payload";
