@@ -11,7 +11,7 @@ import { UserRepository } from './../../repositories/user.repository';
 import { PrismaService } from './../../services/prisma-service/prisma-service.service';
 import { clientProxyMock } from '../../../test/mocks/client-proxy.mock';
 import { ROLE_ENUM } from './../../util/enums';
-import { UserEntity } from '../../entities/user/user.entity';
+import { UserEntity } from './../../entities/user/user.entity';
 
 describe('UserController', () => {
   let userController: UserController;
