@@ -3,10 +3,10 @@ import { ClientProxy, MessagePattern } from '@nestjs/microservices';
 import { Prisma } from '@prisma/client';
 import { IAdminToUserEvent, IUserActivedEvent, IUserAuthReponse, IUserCreatedEvent, IUserDeactivedEvent, IUserDeletedEvent, IUserResponse, IUserToAdminEvent, IUserUdpatedEvent, Subjects } from '@sobhankiani/shopc-common-lib';
 import { UserService } from '../../services/user-services/user.service';
-import { PrometheusInterceptor } from 'decorators/response-time.decorator';
+import { PrometheusInterceptor } from '../../decorators/response-time.decorator';
 
 @Controller('user')
-@UseInterceptors(PrometheusInterceptor)
+// @UseInterceptors(PrometheusInterceptor)
 export class UserController {
     constructor(
         private userService: UserService,

@@ -72,7 +72,7 @@ describe('UserController', () => {
       'test123',
       '123 Main St',
       '1234567890',
-      ['user'],
+      [ROLE_ENUM.USER],
       true,
       0
     );
@@ -143,7 +143,7 @@ describe('UserController', () => {
       'test123',
       'test_address',
       '09111111111',
-      ['USER'],
+      [ROLE_ENUM.USER],
       true,
       1
     )
@@ -211,7 +211,7 @@ describe('UserController', () => {
       'pass1234',
       '123 Main St',
       '1234567890',
-      ['USER'],
+      [ROLE_ENUM.USER],
       true,
       1
     )
@@ -237,7 +237,7 @@ describe('UserController', () => {
           email: "test@example.com",
           address: '123 Main St',
           phone: '1234567890',
-          roles: ['USER'],
+          roles: [ROLE_ENUM.USER],
           isActive: true,
           version: 1
         }
@@ -283,7 +283,7 @@ describe('UserController', () => {
       'pass1234',
       '123 Main St',
       '1234567890',
-      ['USER'],
+      [ROLE_ENUM.USER],
       true,
       1
     )
@@ -331,7 +331,7 @@ describe('UserController', () => {
       'pass1234',
       '123 Main St',
       '1234567890',
-      ['USER'],
+      [ROLE_ENUM.USER],
       true,
       1
     )
@@ -376,7 +376,7 @@ describe('UserController', () => {
       'pass1234',
       '123 Main St',
       '1234567890',
-      ['User'],
+      [ROLE_ENUM.USER],
       true,
       1
     )
@@ -393,9 +393,9 @@ describe('UserController', () => {
     it('should verify the user and return success response', async () => {
       jest.spyOn(userService, 'verifyUser').mockResolvedValueOnce(Promise.resolve(user));
 
-      const result = await userController.verifyUser({ token: verificationCode, roles: ['User'] });
+      const result = await userController.verifyUser({ token: verificationCode, roles: [ROLE_ENUM.USER] });
 
-      expect(userService.verifyUser).toHaveBeenCalledWith(verificationCode, ['User']);
+      expect(userService.verifyUser).toHaveBeenCalledWith(verificationCode, [ROLE_ENUM.USER]);
 
       expect(result).toEqual(verifyResponse);
     });
@@ -403,9 +403,9 @@ describe('UserController', () => {
     it('should return an error response if user verification fails', async () => {
       jest.spyOn(userService, 'verifyUser').mockResolvedValueOnce(null);
 
-      const result = await userController.verifyUser({ token: verificationCode, roles: ['User'] });
+      const result = await userController.verifyUser({ token: verificationCode, roles: [ROLE_ENUM.USER] });
 
-      expect(userService.verifyUser).toHaveBeenCalledWith(verificationCode, ['User']);
+      expect(userService.verifyUser).toHaveBeenCalledWith(verificationCode, [ROLE_ENUM.USER]);
       expect(result).toEqual({
         message: 'Could Not Verify The User',
         status: HttpStatus.BAD_REQUEST,
@@ -417,9 +417,9 @@ describe('UserController', () => {
     it('should return an error response if an exception occurs', async () => {
       jest.spyOn(userService, 'verifyUser').mockRejectedValueOnce(new Error('Some error'));
 
-      const result = await userController.verifyUser({ token: verificationCode, roles: ['User'] });
+      const result = await userController.verifyUser({ token: verificationCode, roles: [ROLE_ENUM.USER] });
 
-      expect(userService.verifyUser).toHaveBeenCalledWith(verificationCode, ['User']);
+      expect(userService.verifyUser).toHaveBeenCalledWith(verificationCode, [ROLE_ENUM.USER]);
       expect(result).toEqual({
         message: 'Could Not Complete The Operation',
         status: HttpStatus.BAD_REQUEST,
@@ -431,7 +431,7 @@ describe('UserController', () => {
     it('should return unauthorized if the user does not required roles', async () => {
       jest.spyOn(userService, 'verifyUser').mockResolvedValueOnce(Promise.resolve(user));
 
-      const result = await userController.verifyUser({ token: verificationCode, roles: ['Admin'] });
+      const result = await userController.verifyUser({ token: verificationCode, roles: [ROLE_ENUM.ADMIN] });
 
       const expectedResult = {
         message: "Could Not Authorized The User",
@@ -440,7 +440,7 @@ describe('UserController', () => {
         data: null
       }
 
-      expect(userService.verifyUser).toHaveBeenCalledWith(verificationCode, ['Admin']);
+      expect(userService.verifyUser).toHaveBeenCalledWith(verificationCode, [ROLE_ENUM.ADMIN]);
       expect(result).toEqual(expectedResult)
     })
 
