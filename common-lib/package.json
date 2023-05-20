@@ -1,6 +1,6 @@
 {
   "name": "@sobhankiani/shopc-common-lib",
-  "version": "1.0.21",
+  "version": "1.0.27",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "files": [

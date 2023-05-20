@@ -1,35 +1,62 @@
-  version: "3.9"
-  
-  services:    
-    order:
-      build:
-        context: ./../user-management
-        dockerfile: Dockerfile
-        target: development
-      image: skn1942/shop-c-usermanagement
-      ports:
-        - 9000:9000
-      expose:
-        - 9000
-      command: >
-        sh -c "npx prisma migrate dev --name init && npm run start:dev"
-      environment:
-        - MONGO_HOST=user-management-mongodb
-        - MONGO_PORT=27017
-        - MONGO_DB_NAME=auth
-        - NATS_URL=nats://nats-server:4222
-        - PORT=9000
-      volumes:
-        - ./../order:/usr/src/app
-      # depends_on:
-        # - nats-server
+version: "3.9"
 
-    auth-mongodb:
-      image: mongo:latest
-      ports:
-        - 27017:27017
-      volumes:
+services:
+  # User Management
+  user-manamgement:
+    build:
+      context: ./../user-management
+      dockerfile: Dockerfile
+      target: development
+    image: skn1942/shop-c-usermanagement
+    ports:
+      - 9000:9000
+    expose:
+      - 9000
+    command: >
+      sh -c "npx prisma migrate dev --name init && npm run start:dev"
+    environment:
+      - MONGO_HOST=user-management-mongodb
+      - MONGO_PORT=27017
+      - MONGO_DB_NAME=auth
+      - NATS_URL=nats://nats-server:4222
+      - PORT=9000
+    volumes:
+      - ./../order:/usr/src/app
+      # depends_on:
+      # - nats-server
+  auth-mongodb:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    volumes:
       - user-management-data
 
-  volumes:
-    -user-management-data:
+  # API Gateway 
+  gateway:
+    build:
+      dockerfile: Dockerfile
+      context: ./../gateway
+      target: development
+    image: skn1942/ftgo-gateway
+    ports:
+      - 9001:9001
+    expose:
+      - 9001
+    command: npm run start:dev
+    volumes:
+      - ./../gateway:/usr/src/app
+    environment:
+      - PORT=9001
+      - USER_MANAGEMENT_HOST=auth
+      - USER_MANAGEMEN_PORT=9000
+      # - RESTAURANT_HOST=restaurant
+      # - RESTAURANT_PORT=9993
+      # - CART_HOST=cart
+      # - CART_PORT=9994
+      # - ORDER_HOST=order
+      # - ORDER_PORT=9995
+    depends_on:
+      - user-management
+
+volumes:
+  -user-management-data:

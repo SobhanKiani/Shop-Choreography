@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@sobhankiani/shopc-common-lib": "^1.0.10",
+    "@sobhankiani/shopc-common-lib": "^1.0.21",
     "nestjs-prometheus": "^4.6.1",
     "prom-client": "^14.2.0"
   }

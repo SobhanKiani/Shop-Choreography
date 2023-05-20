@@ -44,10 +44,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@sobhankiani/shopc-common-lib@^1.0.10":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@sobhankiani/shopc-common-lib/-/shopc-common-lib-1.0.10.tgz#8b06a28077df974444b2b8f74d3c943dea71df41"
-  integrity sha512-fbYYR+jJkCmmz6UZ8wyBkEAIQQAvVCvJMnm4B6IHX61xmuJrcZxXUC/NILwoBrqWuArTHznYVz9xRjQBkBjOsQ==
+"@sobhankiani/shopc-common-lib@^1.0.21":
+  version "1.0.21"
+  resolved "https://registry.yarnpkg.com/@sobhankiani/shopc-common-lib/-/shopc-common-lib-1.0.21.tgz#b66e4ba30ca22b054b16ea654d5904a91f67af75"
+  integrity sha512-G8tji0R0nGOT9k+9eHrxoJfZstjwbhLAAsnhuqZ6zdK0gxHw2568dCVIV+WF/YeRnQiDQNvNYfVUAXRb7/KqeQ==
   dependencies:
     del-cli "^5.0.0"
     typescript "^5.0.4"

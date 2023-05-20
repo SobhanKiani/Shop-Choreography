@@ -8,6 +8,7 @@ import { UserService } from 'services/user-services/user.service';
 import { UserController } from './controllers/user/user.controller';
 import { UserRepository } from 'repositories/user.repository';
 import { PrometheusModule, makeHistogramProvider, makeSummaryProvider } from 'nestjs-prometheus';
+import { CLIENTS_ENUM } from '@sobhankiani/shopc-common-lib';
 
 
 @Module({
@@ -21,11 +22,11 @@ import { PrometheusModule, makeHistogramProvider, makeSummaryProvider } from 'ne
     }),
     ClientsModule.register([
       {
-        name: 'NATS_SERVICE',
+        name: CLIENTS_ENUM.NATS_SERVICE,
         transport: Transport.NATS,
         options: {
-          // servers: [process.env.NATS_URL]
-          servers: ["nats://localhost:4222"]
+          servers: [process.env.NATS_URL]
+          // servers: ["nats://localhost:4222"]
         }
       },
     ]),

@@ -12,4 +12,7 @@ export * from './responses/base.response';
 export * from './responses/user/user-auth.response';
 export * from './responses/user/user.response';
 
-export * from './message-patterns/user.patterns'
+export * from './message-patterns/user.patterns';
+
+export * from './utils/roles.enum';
+export * from './utils/clients';

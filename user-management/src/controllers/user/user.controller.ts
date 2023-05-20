@@ -1,7 +1,7 @@
 import { Controller, HttpStatus, Inject, UseInterceptors } from '@nestjs/common';
 import { ClientProxy, MessagePattern } from '@nestjs/microservices';
 import { Prisma } from '@prisma/client';
-import { IAdminToUserEvent, IUserActivedEvent, IUserAuthReponse, IUserCreatedEvent, IUserDeactivedEvent, IUserDeletedEvent, IUserResponse, IUserToAdminEvent, IUserUdpatedEvent, Subjects } from '@sobhankiani/shopc-common-lib';
+import { CLIENTS_ENUM, IAdminToUserEvent, IUserActivedEvent, IUserAuthReponse, IUserCreatedEvent, IUserDeactivedEvent, IUserDeletedEvent, IUserResponse, IUserToAdminEvent, IUserUdpatedEvent, Subjects } from '@sobhankiani/shopc-common-lib';
 import { UserService } from '../../services/user-services/user.service';
 import { PrometheusInterceptor } from '../../decorators/response-time.decorator';
 
@@ -10,7 +10,7 @@ import { PrometheusInterceptor } from '../../decorators/response-time.decorator'
 export class UserController {
     constructor(
         private userService: UserService,
-        @Inject('NATS_SERVICE') private natsClient: ClientProxy,
+        @Inject(CLIENTS_ENUM.NATS_SERVICE) private natsClient: ClientProxy,
     ) { }
 
     @MessagePattern("USER_SIGN_UP")
