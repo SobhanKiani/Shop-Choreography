@@ -7,6 +7,7 @@ import { PrismaService } from 'services/prisma-service/prisma-service.service';
 import { UserService } from 'services/user-services/user.service';
 import { UserController } from './controllers/user/user.controller';
 import { UserRepository } from 'repositories/user.repository';
+import { PrometheusModule, makeHistogramProvider, makeSummaryProvider } from 'nestjs-prometheus';
 
 
 @Module({
@@ -28,9 +29,26 @@ import { UserRepository } from 'repositories/user.repository';
         }
       },
     ]),
+    PrometheusModule.register({
+      defaultMetrics: {
+        enabled: true
+      },
+      defaultLabels: {
+        app: 'user-management'
+      }
+
+    })
   ],
   controllers: [UserController],
-  providers: [PrismaService, UserService, UserRepository],
-  
+  providers: [
+    PrismaService,
+    UserService,
+    UserRepository,
+    makeSummaryProvider({
+      name: 'request_duration_seconds',
+      help: 'request_duration_seconds_help',
+    })
+  ],
+
 })
 export class AppModule { }
