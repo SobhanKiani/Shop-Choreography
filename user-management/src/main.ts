@@ -29,6 +29,7 @@ async function bootstrap() {
 
   app.startAllMicroservices();
 
+
   const prismaService = app.get(PrismaService);
   await prismaService.enableShutdownHooks(app);
 }

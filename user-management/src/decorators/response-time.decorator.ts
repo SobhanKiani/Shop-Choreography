@@ -2,7 +2,7 @@ import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nes
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { MetricType, Registry, Summary, collectDefaultMetrics } from 'prom-client';
-import * as promClient from 'prom-client';
+
 import { url } from 'inspector';
 
 @Injectable()

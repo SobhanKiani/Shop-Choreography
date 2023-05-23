@@ -699,10 +699,10 @@
     tslib "2.4.0"
     uuid "8.3.2"
 
-"@nestjs/core@^9.4.0":
-  version "9.4.0"
-  resolved "https://registry.yarnpkg.com/@nestjs/core/-/core-9.4.0.tgz#bca5128138fcf9b4668bc524b578f3805a325183"
-  integrity sha512-yTLryCgFD0462wPe4HIzhyTcDgibt8Stfwb5YzcX7Ma0NM4m8uBIpcPG109KBubp8ZmV85e5mw4rl20qLQQVsQ==
+"@nestjs/core@^9.4.1":
+  version "9.4.1"
+  resolved "https://registry.yarnpkg.com/@nestjs/core/-/core-9.4.1.tgz#970a6f88f093a994b8659652a119277bbcb75fd4"
+  integrity sha512-KbG0L5UVaI9kjZv3QkSyCf8Cz5lj11hy60n+NPoO0GZmJbhWkfsjletwKpwlpMeGbi7jLGTsU+HPDgprANSNEA==
   dependencies:
     uid "2.0.2"
     "@nuxtjs/opencollective" "0.3.2"
@@ -719,10 +719,10 @@
     "@types/jsonwebtoken" "9.0.1"
     jsonwebtoken "9.0.0"
 
-"@nestjs/microservices@^9.4.0":
-  version "9.4.0"
-  resolved "https://registry.yarnpkg.com/@nestjs/microservices/-/microservices-9.4.0.tgz#25d5a88a4d7b5c45b53153521a78702a5c8f1f37"
-  integrity sha512-3IlURTijN2whedrfnLbJ3QQ4giDU1SxXcepXxtUL1MMkZAJgw2gN7sTquOXVgy/Ci5OMPO+vOjVyadjFejrgKA==
+"@nestjs/microservices@^9.1.2":
+  version "9.4.1"
+  resolved "https://registry.yarnpkg.com/@nestjs/microservices/-/microservices-9.4.1.tgz#73f67828860fe176d518784bd59189f2a7d7e24c"
+  integrity sha512-052P1gFdbjEnqTLY9mwhNg7Duy/6o6tLpUQHs5w3VhpBo/fwL/2n61PfG27UM57wwtDea49KnoXWJ0+bXubrqw==
   dependencies:
     iterare "1.2.1"
     tslib "2.5.0"
@@ -791,10 +791,10 @@
     consola "^2.15.0"
     node-fetch "^2.6.1"
 
-"@prisma/client@^4.14.0":
-  version "4.14.0"
-  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-4.14.0.tgz#715b3dd045d094b03cb0a7f2991f088d15ae553e"
-  integrity sha512-MK/XaA2sFdfaOa7I9MjNKz6dxeIEdeZlnpNRoF2w3JuRLlFJLkpp6cD3yaqw2nUUhbrn3Iqe3ZpVV+VuGGil7Q==
+"@prisma/client@^4.3.1":
+  version "4.14.1"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-4.14.1.tgz#61720f385f687f7e88de41fccade1ed62be57a54"
+  integrity sha512-TZIswkeX1ccsHG/eN2kICzg/csXll0osK3EHu1QKd8VJ3XLcXozbNELKkCNfsCUvKJAwPdDtFCzF+O+raIVldw==
   dependencies:
     "@prisma/engines-version" "4.14.0-67.d9a4c5988f480fa576d43970d5a23641aa77bc9c"
 
@@ -1632,6 +1632,11 @@ binary-extensions@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
+
+bintrees@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/bintrees/-/bintrees-1.0.2.tgz#49f896d6e858a4a499df85c38fb399b9aff840f8"
+  integrity sha512-VOMgTMwjAaUG580SXn3LacVgjurrbMme7ZZNYGSSV7mmtY6QQRh0Eg3pwIcntQ77DErK1L0NxkbetjcoXzVwKw==
 
 bl@^4.1.0:
   version "4.1.0"
@@ -4080,6 +4085,11 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+nestjs-prometheus@^4.6.1:
+  version "4.6.1"
+  resolved "https://registry.yarnpkg.com/nestjs-prometheus/-/nestjs-prometheus-4.6.1.tgz#712f525fabe1d1312600fdbf6940c776dd61b3ea"
+  integrity sha512-cQ5BLU3PksEXyaGU5NNR/z/RUTRs+Yrt64MHGAi0U4sExn32Qd3045QwPlsE20bNanoGxEpaEB4+m1IpfMFspw==
+
 nkeys.js@1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nkeys.js/-/nkeys.js-1.0.5.tgz#3024bde671eb33be0316ff2d5abe8b8cec960158"
@@ -4426,6 +4436,13 @@ process-nextick-args@~2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.1.tgz#7820d9b16120cc55ca9ae7792680ae7dba6d7fe2"
   integrity sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==
+
+prom-client@^14.2.0:
+  version "14.2.0"
+  resolved "https://registry.yarnpkg.com/prom-client/-/prom-client-14.2.0.tgz#ca94504e64156f6506574c25fb1c34df7812cf11"
+  integrity sha512-sF308EhTenb/pDRPakm+WgiN+VdM/T1RaHj1x+MvAuT8UiQP8JmOEbxVqtkbfR4LrvOg5n7ic01kRBDGXjYikA==
+  dependencies:
+    tdigest "^0.1.1"
 
 prompts@^2.0.1:
   version "2.4.2"
@@ -5024,6 +5041,13 @@ tapable@^2.1.1, tapable@^2.2.0, tapable@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-2.2.1.tgz#1967a73ef4060a82f12ab96af86d52fdb76eeca0"
   integrity sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==
+
+tdigest@^0.1.1:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/tdigest/-/tdigest-0.1.2.tgz#96c64bac4ff10746b910b0e23b515794e12faced"
+  integrity sha512-+G0LLgjjo9BZX2MfdvPfH+MKLCrxlXSYec5DaPYP1fe6Iyhf0/fSmJ0bFiZ1F8BT6cGXl2LpltQptzjXKWEkKA==
+  dependencies:
+    bintrees "1.0.2"
 
 terminal-link@^2.0.0:
   version "2.1.1"
