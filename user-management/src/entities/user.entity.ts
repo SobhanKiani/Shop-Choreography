@@ -116,7 +116,7 @@ export class UserEntity {
     }
 
     public async isGivenPasswordValid(password: string) {
-        return await bcrypt.compare(password, await this.password.getHashedValue());
+        return await bcrypt.compare(password, this.password.getValue());
     }
 
     public async createTokenForUser(jwtService: JwtService) {

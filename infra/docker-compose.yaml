@@ -11,14 +11,16 @@ services:
       - 9000:9000
     expose:
       - 9000
+    # command: >
+    #   sh -c "npx prisma generate && npm run start:dev"
     command: >
-      sh -c "npx prisma generate && npm run start:dev"
+      sh -c "npx prisma migrate dev --name init && npm run start:dev"
     environment:
-      - MONGO_HOST=user-management-mongodb
-      - MONGO_PORT=27017
-      - MONGO_DB_NAME=user-management
-      - MONGO_USER=root
-      - MONGO_PASSWORD=testPassword1234@
+      - POSTGRES_DB=user-management
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=user-management-db
+      - POSTGRES_PORT=5432
       - NATS_URL=nats://nats-server:4222
       - PORT=9000
     volumes:
@@ -26,15 +28,28 @@ services:
     depends_on:
       - nats-server
 
-  user-management-mongodb:
-    image: mongo:latest
+  user-management-db:
+    image: postgres
     ports:
-      - 27017:27017
+      - 5432:5432
+    expose:
+      - 5432
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: testPassword1234@
-    # volumes:
-    #   - user-management-data:data/db/
+      - POSTGRES_DB=user-management
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - user-management-data:/var/lib/postgresql/data/
+  # user-management-mongodb:
+  #     image: mongo:latest
+  #     ports:
+  #       - 27017:27017
+  #     environment:
+  #       MONGO_INITDB_ROOT_USERNAME: root
+  #       MONGO_INITDB_ROOT_PASSWORD: testPassword1234
+  #     volumes:
+  #     - user-management-data:data/db/
 
   gateway:
     build:
@@ -52,7 +67,7 @@ services:
     environment:
       - PORT=9001
       - USER_MANAGEMENT_HOST=user-management
-      - USER_MANAGEMEN_PORT=9000
+      - USER_MANAGEMENT_PORT=9000
       # - RESTAURANT_HOST=restaurant
       # - RESTAURANT_PORT=9993
       # - CART_HOST=cart
@@ -73,5 +88,5 @@ services:
       - 4222
     command: -c nats-server.conf -DV
 
-# volumes:
-#   user-management-data:
+volumes:
+  user-management-data:
