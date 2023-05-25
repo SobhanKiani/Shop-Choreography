@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { UserManagementController } from './user-management/controllers/user-management.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { CLIENTS_ENUM } from '@sobhankiani/shopc-common-lib';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './guards/auth.gurad';
 
 @Module({
   imports: [
@@ -17,6 +19,11 @@ import { CLIENTS_ENUM } from '@sobhankiani/shopc-common-lib';
     ])
   ],
   controllers: [UserManagementController],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule { }

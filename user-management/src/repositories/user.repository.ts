@@ -21,17 +21,24 @@ export class UserRepository {
 
     async updateUser(userEntity: UserEntity): Promise<UserEntity | null> {
         const userEntityJson = userEntity.toObject();
+        const updateData = {
+            name: userEntityJson.name,
+            address: userEntityJson.address,
+            email: userEntityJson.email,
+            phone: userEntityJson.phone,
+            isActive: userEntityJson.isActive
+        }
         const args: Prisma.UserUpdateManyArgs = {
-            where: { id: userEntity.getId(), version: userEntity.getVersionValue() },
+            where: { id: userEntityJson.id, version: userEntityJson.version },
             data: {
-                ...userEntityJson,
+                ...updateData,
                 version: {
                     increment: 1
                 }
             },
-        }
+        }   
 
-        const updatedUser = await this.prisma.user.updateMany(args)[0];
+        const updatedUser = await this.prisma.user.updateMany(args);
         if (!updatedUser) {
             return null;
         }

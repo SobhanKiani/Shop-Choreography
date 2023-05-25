@@ -47,7 +47,9 @@ export class UserService {
 
     async updateUser(id, updateData: Prisma.UserUpdateInput): Promise<UserEntity | null> {
         const userEntity = await this.userRepository.getUserById(id);
+        
         if (!userEntity) {
+            console.log('NOT FOUND THE USER')
             return null;
         }
 
@@ -88,7 +90,11 @@ export class UserService {
         }
         const userEntity = await this.getUserById(decodedToken.id)
 
-        if (roles && roles.length > 0 && userEntity.hasRoles(roles)) {
+        if (!roles || roles.length == 0) {
+            return userEntity;
+        }
+
+        if (userEntity.hasRoles(roles)) {
             return userEntity;
         }
     }
@@ -102,6 +108,7 @@ export class UserService {
 
         userEntity.makeUserAdmin()
         const updatedEntity = await this.userRepository.makeUserAdmin(userEntity);
+        console.log(updatedEntity)
         return updatedEntity;
     }
 

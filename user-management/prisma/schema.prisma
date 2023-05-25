@@ -18,7 +18,7 @@ model User {
   password String
   address  String
   phone    String
-  roles    String[]
+  roles    String[] @default(["USER"])
   isActive Boolean  @default(true)
   version  Int      @default(0)
 }

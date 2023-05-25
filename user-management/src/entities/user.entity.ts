@@ -158,7 +158,9 @@ export class UserEntity {
 
     public makeUserAdmin() {
         const newRole = new Role(ROLE_ENUM.ADMIN);
-        this.roles.push(newRole);
+        if (!this.getRolesStringList().includes(newRole.getValue())) {
+            this.roles.push(newRole);
+        }
         return this.roles;
     }
 

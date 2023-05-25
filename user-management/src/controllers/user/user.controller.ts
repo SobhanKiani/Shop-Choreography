@@ -165,6 +165,7 @@ export class UserController {
 
 
         } catch (e) {
+            console.log("ERROR",e)
             return {
                 message: "Could Not Complete The Operation",
                 status: HttpStatus.BAD_REQUEST,
@@ -272,7 +273,7 @@ export class UserController {
     @MessagePattern("USER_MAKE_ADMIN")
     async makeUserAdmin(params: { id: string }) {
         try {
-
+            console.log('PARAMS',params)
             const userEntity = await this.userService.makeUserAdmin(params.id);
             if (!userEntity) {
                 return {
