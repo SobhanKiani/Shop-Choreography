@@ -1,0 +1,19 @@
+{
+  "name": "@sobhankiani/shopc-common-lib",
+  "version": "1.0.27",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "files": [
+    "build/**/*"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "clean": "del ./build/*",
+    "build": "npm run clean && tsc",
+    "pub": "npm version patch && npm run build && npm publish --access public"
+  },
+  "dependencies": {
+    "del-cli": "^5.0.0",
+    "typescript": "^5.0.4"
+  }
+}

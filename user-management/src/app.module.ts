@@ -5,6 +5,10 @@ import { PassportModule } from '@nestjs/passport';
 import { JWT_CONSTANT } from 'jwt/constants';
 import { PrismaService } from 'services/prisma-service/prisma-service.service';
 import { UserService } from 'services/user-services/user.service';
+import { UserController } from './controllers/user/user.controller';
+import { UserRepository } from 'repositories/user.repository';
+import { PrometheusModule } from 'nestjs-prometheus';
+import { CLIENTS_ENUM } from '@sobhankiani/shopc-common-lib';
 
 
 @Module({
@@ -18,15 +22,30 @@ import { UserService } from 'services/user-services/user.service';
     }),
     ClientsModule.register([
       {
-        name: 'NATS_SERVICE',
+        name: CLIENTS_ENUM.NATS_SERVICE,
         transport: Transport.NATS,
         options: {
           servers: [process.env.NATS_URL]
+          // servers: ["nats://localhost:4222"]
         }
       },
     ]),
+    PrometheusModule.register({
+      defaultMetrics: {
+        enabled: true
+      },
+      defaultLabels: {
+        app: 'user-management'
+      }
+
+    })
   ],
-  controllers: [],
-  providers: [PrismaService, UserService],
+  controllers: [UserController],
+  providers: [
+    PrismaService,
+    UserService,
+    UserRepository,
+  ],
+
 })
 export class AppModule { }
